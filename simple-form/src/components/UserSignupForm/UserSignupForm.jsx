@@ -1,49 +1,70 @@
-import { useState } from 'react';
 import Input from '../Input/Input';
+import useInput from '../../hooks/useInput';
+
+import { hasMinLength, isEmail, isNotEmpty } from '../../util/validation';
 
 function UserSignupForm() {
-  const [formData, setFormData] = useState({
-    email: '',
-    firstname: '',
-    lastname: '',
-  });
+  const {
+    value: emailValue,
+    hasError: emailHasError,
+    handleInputBlur: handleEmailBlur,
+    handleInputChange: handleEmailChange,
+  } = useInput('', (value) => isNotEmpty(value) && isEmail(value));
 
-  function handleInputChange(e) {
-    const { name, value } = e.target;
+  const {
+    value: firstNameValue,
+    hasError: firstNameHasError,
+    handleInputBlur: handleFirstNameBlur,
+    handleInputChange: handleFirstNameChange,
+  } = useInput('', (value) => isNotEmpty(value) && hasMinLength(value, 3));
 
-    setFormData((prevFormData) => {
-      return {
-        ...prevFormData,
-        [name]: value,
-      };
-    });
-  }
+  const {
+    value: lastNameValue,
+    hasError: lastNameHasError,
+    handleInputBlur: handleLastNameBlur,
+    handleInputChange: handleLastNameChange,
+  } = useInput('', (value) => isNotEmpty(value) && hasMinLength(value, 3));
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(formData);
+    console.log(emailValue, firstNameValue, lastNameValue);
   }
 
   return (
     <form method="POST" onSubmit={handleSubmit}>
       <Input
-        type="email"
-        placeholder="Your email address"
+        id="email"
         name="email"
+        label="E-mail"
+        value={emailValue}
+        type="email"
+        placeholder="Your e-mail address"
         required
-        onChange={(e) => handleInputChange(e, 'email')}
+        onChange={handleEmailChange}
+        onBlur={handleEmailBlur}
+        error={emailHasError && 'Enter a valid e-mail address.'}
       />
       <Input
+        id="firstName"
+        name="firstName"
+        label="First name"
+        value={firstNameValue}
         placeholder="Your first name"
-        name="firstname"
-        onChange={(e) => handleInputChange(e, 'firstName')}
+        onChange={handleFirstNameChange}
+        onBlur={handleFirstNameBlur}
+        error={firstNameHasError && 'Enter a valid first name.'}
       />
       <Input
+        id="lastName"
+        name="lastName"
+        label="Last name"
+        value={lastNameValue}
         placeholder="Your last name"
-        name="lastname"
-        onChange={(e) => handleInputChange(e, 'lastName')}
+        onChange={handleLastNameChange}
+        onBlur={handleLastNameBlur}
+        error={lastNameHasError && 'Enter a valid last name.'}
       />
-      <input type="submit" value="Sign up" />
+      <button>Sign Up</button>
     </form>
   );
 }
